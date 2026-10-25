@@ -1,0 +1,12 @@
+arm: rebuild
+python: Python 3.9.6
+grading: literal string / exit-code checks, defined in run-questions.sh
+
+Q1  PASS    postal-address finding prints the quote-check failure line
+Q2  PASS    opt-out finding does not print '✓ quote verified'
+Q3  PASS    cites 7704(a)(5)(A)(iii), statute quote verified
+Q4  PASS    opt-out finding is FAIL
+Q5  PASS    opt-out finding is FAIL
+Q6  PASS    self-test fails and names the citation-swap case
+Q7  PASS    4/4 clean fixtures: no FAIL, no quote-check failure
+Q8  PASS    exit 2, no report

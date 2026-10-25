@@ -1,0 +1,6 @@
+## [PASS] Working, one-step, no-fee opt-out mechanism — `AUTOMATED`
+- **Rule:** rule-5-opt-out  
+- **Citation:** 16 CFR §316.4 (✗ QUOTE NOT FOUND under 16 CFR §316.4 in reference/ — self-check failure)  
+- **Quoted:** "Neither a sender nor any person acting on behalf of a sender may require that any recipient pay any fee, provide any information other than the recipient's electronic mail address and opt-out preferences, or take any other steps except sending a reply electronic mail message or visiting a single Internet Web page"  
+- Opt-out language is present with no fee-gating, multi-step, or extra-information language detected nearby. Scope note: this rule applies regardless of subscriber/membership status (FTC guide header 6) unless the message is genuinely transactional-or-relationship per §316.3(c) — this checker does not attempt that judgment.
+

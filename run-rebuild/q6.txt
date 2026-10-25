@@ -1,0 +1,32 @@
+$ plant: first line of quote_is_grounded() becomes 'return True'  (planted: 1)
+$ python3 audit.py --selftest
+can-spam-auditor --selftest
+
+[PASS] label-integrity: no AUTOMATED check function references network/LLM tokens (urllib, requests, httpx, http.client, socket, openai, anthropic, urlopen, os.environ)
+[FAIL] citation-swap canary: rule-1-header-accuracy quote moved from 16 CFR §316.2(m) to 16 CFR §316.2(n) was still verified -- the section check is not checking the section
+[FAIL] citation-swap canary: rule-2-subject-line quote moved from 16 CFR §316.3(a)(2) to 16 CFR §316.3(b) was still verified -- the section check is not checking the section
+[FAIL] citation-swap canary: rule-3-ad-disclosure quote moved from FTC Compliance Guide, "Identify the message as an ad" to FTC Compliance Guide, "Tell recipients where you're located" was still verified -- the section check is not checking the section
+[FAIL] citation-swap canary: rule-4-postal-address quote moved from 15 U.S.C. 7704(a)(5)(A)(iii) to 15 U.S.C. 7704(a)(5)(A)(ii) was still verified -- the section check is not checking the section
+[FAIL] citation-swap canary: rule-4-postal-address quote moved from 16 CFR §316.2(p) to 16 CFR §316.2(o) was still verified -- the section check is not checking the section
+[FAIL] citation-swap canary: rule-5-opt-out quote moved from 16 CFR §316.5 to 16 CFR §316.4 was still verified -- the section check is not checking the section
+[FAIL] citation-swap canary: rule-6-prompt-honor quote moved from 16 CFR §316.5(b) to 16 CFR §316.5(a) was still verified -- the section check is not checking the section
+[FAIL] citation-swap canary: rule-7-third-party-monitoring quote moved from FTC Compliance Guide, "Monitor what others are doing on your behalf" to FTC Compliance Guide, "Honor opt-out requests promptly" was still verified -- the section check is not checking the section
+[PASS] not-an-email.txt: correctly refused to report against non-email input (raises NotAnEmailError)
+[PASS] clean.eml: clean fixture fully passes (4 automated checks)
+[PASS] bad-header-mismatch.eml: fails only rule-1-header-accuracy, as designed
+[PASS] missing-from-header.eml: fails only rule-1-header-accuracy, as designed
+[PASS] bad-subject-contradicts-body.eml: fails only rule-2-subject-line, as designed
+[PASS] bad-no-ad-disclosure.eml: fails only rule-3-ad-disclosure, as designed
+[PASS] bad-no-postal-address.eml: fails only rule-4-postal-address, as designed
+[PASS] bad-no-optout.eml: fails only rule-5-opt-out, as designed
+[PASS] bad-fee-gated-optout.eml: fails only rule-5-opt-out, as designed
+[PASS] bad-multistep-optout.eml: fails only rule-5-opt-out, as designed
+[PASS] bad-extra-info-optout.eml: fails only rule-5-opt-out, as designed
+[PASS] bad-info-gated-optout.eml: fails only rule-5-opt-out, as designed
+[PASS] clean-optout-asks-email-only.eml: clean fixture fully passes (4 automated checks)
+[PASS] clean-html-only-entities.eml: clean fixture fully passes (4 automated checks)
+[PASS] clean-view-in-browser-stub.eml: clean fixture fully passes (4 automated checks)
+[PASS] clean-longform-commercial-pitch.eml: clean fixture fully passes (4 automated checks)
+
+SELFTEST FAILED
+[exit 1]
