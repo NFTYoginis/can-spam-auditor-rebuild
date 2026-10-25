@@ -37,7 +37,12 @@ python3 audit.py --selftest                            # fixtures + citation-swa
 python3 audit.py --judge-mode                          # the three adversarial checks from the original build
 ```
 
-Exit code `0` if no check FAILs, `1` if any does, and `2` for input that isn't an email.
+| Exit | Meaning |
+| --- | --- |
+| `0` | No check FAILs, and every quote verified under the provision it cites |
+| `1` | At least one check FAILs, and every quote verified |
+| `2` | The input isn't an email, or no input was given. No report is printed |
+| `3` | A quote-check failure: some finding's quote is not under the provision it cites, or `reference/` has a malformed anchor. The report header says which findings are affected. This outranks `1`, because a report with a misattributed quote can't be trusted either way |
 
 ## What it checks
 

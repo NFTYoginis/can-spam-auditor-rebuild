@@ -8,6 +8,10 @@ the critical path — this is the whole mechanism, not a claim about it (see
 reference/rule-map.md for exactly which checks are AUTOMATED, which are
 AI-ASSISTED, and which are explicitly OUT OF SCOPE, and why).
 
+Exit codes: 0 no FAIL; 1 at least one FAIL; 2 not an email (or no input);
+3 a quote-check failure (a quote not under the provision its finding cites,
+or a malformed reference/), which outranks 1.
+
 Usage:
     python3 audit.py <path-to-email.eml>              # audit one email, print Markdown report
     python3 audit.py <path-to-email.eml> --json        # machine-readable report
@@ -632,6 +636,17 @@ def render_markdown(path: Path, findings: list[Finding]) -> str:
         f"/ {sum(1 for f in findings if f.status == 'SKIPPED')} out of scope"
     )
     lines.append("")
+    ungrounded = [f for f in findings if not f.quote_grounded]
+    if ungrounded:
+        # A finding whose quote isn't under its own citation can't be
+        # trusted, so say so before any finding is read. Exit code 3.
+        lines.append(
+            f"✗ **{len(ungrounded)} quote-check failure(s)** "
+            f"({', '.join(f.rule_id for f in ungrounded)}): a quoted line is "
+            "not under the provision its finding cites. Treat this report "
+            "as unreliable until that's fixed."
+        )
+        lines.append("")
     if fails:
         lines.append(f"⚠️ {PENALTY_LINE}")
         lines.append("")
@@ -984,6 +999,10 @@ def main(argv=None) -> int:
     except NotAnEmailError as e:
         print(f"error: {e}", file=sys.stderr)
         return 2
+    except MalformedReferenceError as e:
+        print(f"error: reference/ is malformed, no quote can be checked: {e}",
+              file=sys.stderr)
+        return 3
 
     if args.json:
         print(json.dumps([f.to_dict() for f in findings], indent=2))
@@ -994,6 +1013,8 @@ def main(argv=None) -> int:
         Path(args.sarif).write_text(json.dumps(render_sarif(path, findings), indent=2))
         print(f"\n(SARIF written to {args.sarif})", file=sys.stderr)
 
+    if any(not f.quote_grounded for f in findings):
+        return 3  # a quote-check failure outranks any finding's status
     return 1 if any(f.status == "FAIL" for f in findings) else 0
 
 
