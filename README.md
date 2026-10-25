@@ -35,6 +35,7 @@ run-original/          raw output, arm A
 rebuild/               arm B
 run-rebuild/           raw output, arm B
 results.md             A vs B, ties, limits, left alone
+.github/workflows/     on every push: both arms, the rebuild self-test, and a check that verdicts match the committed runs
 ```
 
 ## Commit order

@@ -1,0 +1,27 @@
+name: questions
+
+on: push
+
+jobs:
+  both-arms:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run the eight questions against arm A (original/)
+        run: ./run-questions.sh original
+
+      - name: Run the eight questions against arm B (rebuild/)
+        run: ./run-questions.sh rebuild
+
+      - name: Rebuild self-test
+        run: python3 rebuild/audit.py --selftest
+
+      # The raw output is committed. Fail if any verdict differs from it;
+      # the python: line is ignored because the runner's version differs.
+      - name: Verdicts match the committed runs
+        run: git diff --exit-code -I '^python:' -- run-original/summary.txt run-rebuild/summary.txt
+
+      - name: Any other difference from the committed raw output (informational)
+        if: always()
+        run: git diff --stat -- run-original run-rebuild
