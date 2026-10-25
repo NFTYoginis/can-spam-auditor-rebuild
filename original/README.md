@@ -1,0 +1,155 @@
+# can-spam-auditor
+
+![selftest](https://github.com/NFTYoginis/can-spam-auditor/actions/workflows/selftest.yml/badge.svg)
+
+**This auditor verifies its own citations before it lets itself report anything — every quoted regulatory phrase is checked as a real substring of `reference/` before it's allowed to print.** Audits a raw marketing email (`.eml` — full source, headers included) against the CAN-SPAM Act's core requirements, codified at **16 CFR Part 316**. Two-track: a deterministic checker for what's mechanically decidable, honest `AI-ASSISTED` labeling for what isn't, and two requirements named as out of scope rather than silently skipped.
+
+**Zero API key. Zero network calls. Zero third-party dependencies** — `audit.py` uses only the Python 3 standard library.
+
+## Press one button
+
+```
+$ python3 audit.py --judge-mode
+can-spam-auditor --judge-mode
+Three adversarial checks. Each one already broke this build once.
+
+[PASS] (a) garbage input -> refuses to report (NotAnEmailError, exit 2), not a plausible-looking fake finding
+[PASS] (b) a real email missing only its From header -> still a genuine rule-1 FAIL (not swallowed by (a)'s refusal)
+[PASS] (c) --selftest re-run in a subprocess with a stripped environment (PATH=/usr/bin:/bin only) -> exit 0, proving the offline claim instead of just stating it
+
+JUDGE-MODE PASSED — all three confirmed live, right now
+```
+
+Under a second, nothing to install beyond Python 3. Each of those three checks is a real, dated finding against this exact codebase, not a hypothetical — see below.
+
+## Tested by trying to break it
+
+Not a claim of being bulletproof — a dated, git-tracked arc of someone actually attacking it:
+
+An adversarial test on 2026-09-05 fed the checker plain non-email text — no headers, not an email at all — and got back a fully-formed "**4 FAIL**" report citing real CFR text, indistinguishable from a genuine finding. Root cause diagnosed the same day: `parse_eml()` never checked whether the input had *any* real email structure before running every check against it. Fixed with a hard refusal (`NotAnEmailError`, exit 2) rather than a banner, carefully distinguished from a real-but-incomplete email (which still correctly produces a genuine finding — that distinction is check (b) in `--judge-mode` above), and closed with a permanent regression test (`fixtures/not-an-email.txt`) so it can't silently reappear. Commit `4d35421`.
+
+Real-content testing the same week — professionally-drafted marketing copy, not just synthetic fixtures — found a second real gap: the ad-disclosure check didn't originally account for CAN-SPAM's own primary-purpose exemption (16 CFR §316.3), so it FAILed content that plausibly didn't need disclosure at all. Scope-noted the same day. See `docs/index.html` § In the wild for the full account.
+
+Neither of these was found by re-reading our own work. Both were found by someone trying to break it, which is the more honest kind of testing to disclose than a build that only ever tested itself.
+
+## Full test suite
+
+```
+$ python3 audit.py --selftest
+can-spam-auditor --selftest
+
+[PASS] label-integrity: no AUTOMATED check function references network/LLM tokens (urllib, requests, httpx, http.client, socket, openai, anthropic, urlopen, os.environ)
+[PASS] not-an-email.txt: correctly refused to report against non-email input (raises NotAnEmailError)
+[PASS] clean.eml: clean fixture fully passes (4 automated checks)
+[PASS] bad-header-mismatch.eml: fails only rule-1-header-accuracy, as designed
+[PASS] missing-from-header.eml: fails only rule-1-header-accuracy, as designed
+[PASS] bad-subject-contradicts-body.eml: fails only rule-2-subject-line, as designed
+[PASS] bad-no-ad-disclosure.eml: fails only rule-3-ad-disclosure, as designed
+[PASS] bad-no-postal-address.eml: fails only rule-4-postal-address, as designed
+[PASS] bad-no-optout.eml: fails only rule-5-opt-out, as designed
+[PASS] bad-fee-gated-optout.eml: fails only rule-5-opt-out, as designed
+[PASS] bad-multistep-optout.eml: fails only rule-5-opt-out, as designed
+[PASS] clean-html-only-entities.eml: clean fixture fully passes (4 automated checks)
+[PASS] clean-view-in-browser-stub.eml: clean fixture fully passes (4 automated checks)
+[PASS] clean-longform-commercial-pitch.eml: clean fixture fully passes (4 automated checks)
+
+SELFTEST PASSED
+```
+
+13 assertions. Three of the fixtures aren't clean short synthetic text — one is HTML-only with table-layout addresses and HTML entities, one is the "View this email in your browser" stub pattern real ESPs (Mailchimp/Klaviyo/Kajabi-style) actually send, and one is a ~280-word real-length soft-sell pitch — all shaped (or sized) the way real marketing email actually arrives, not just clean synthetic text. See `fixtures/manifest.md` § Parser robustness. The CI badge at the top runs this exact command on every push — see `.github/workflows/selftest.yml`.
+
+## Why this exists
+
+Every separate email that violates the CAN-SPAM Act is subject to a civil penalty of **up to $53,088** — the FTC's own 2025 inflation-adjusted figure, still current for 2026 (no OMB adjustment happened this year). Every email sent counts separately. That's real money for a mistake as small as a missing unsubscribe link or a mismatched Reply-To address. See `reference/ftc-compliance-guide.md` for the FTC's own text.
+
+## Two ways to use this
+
+This is a manual pre-send check, not a background watcher — you run it once, on one email you're about to send. It doesn't sit on a folder or an inbox.
+
+**Run it yourself (2 minutes, the real deterministic checks):**
+
+1. Clone this repo.
+2. You need Python 3.9+ and nothing else — no `pip install`, no `requirements.txt`.
+3. Run the self-test to confirm the checker works on your machine: `python3 audit.py --selftest`
+4. Audit your own email: export it from your email client as raw source (most clients: "View Original" / "Show source" / "Download .eml"), then `python3 audit.py path/to/your-email.eml`
+
+**Drop the folder into a Claude Project (a specialist that explains findings in plain language):**
+
+Add this repo to a Claude Project (or paste `identity.md` / `rules.md` / `examples.md` / `reference/` into its instructions), then paste in an email's raw source and ask it to audit CAN-SPAM compliance.
+
+⚠️ **Only real if code execution is enabled in that Project.** This specialist's `rules.md` requires it to actually run `audit.py` before calling anything `AUTOMATED` — without a code-execution tool available, it can't, and it's instructed to say so rather than fake a report. No code execution means `AI-ASSISTED` impressions only, clearly labeled as such, not the real automated checks. See `rules.md` § Always / § Never.
+
+## Usage
+
+```
+python3 audit.py <email.eml>                          # Markdown report
+python3 audit.py <email.eml> --json                    # machine-readable
+python3 audit.py <email.eml> --sarif report.sarif       # also emit SARIF (GitHub Code Scanning, VS Code Problems panel)
+python3 audit.py <email.eml> --brand-domain example.com # stricter Rule 1: also fail if From isn't on your declared domain
+python3 audit.py --selftest                             # prove the checker works (P17-style: known-good + known-bad fixtures)
+python3 audit.py --judge-mode                           # the 3 adversarial checks above, in one command, ~10 seconds
+```
+
+Exit code `0` if every automated check passes; `1` if any `FAIL` fired.
+
+## What it checks (and what it honestly doesn't)
+
+| Rule | Tag | What it means |
+| --- | --- | --- |
+| Accurate header info (From/Reply-To domain consistency) | `AUTOMATED` | |
+| Non-deceptive subject line | `AUTOMATED` *(one narrow structural case)* / `AI-ASSISTED` *(everything else)* | See `reference/rule-map.md` |
+| Ad disclosure present | `AUTOMATED` | only binds commercial-purpose messages (§316.3) — a FAIL says "no disclosure phrase found," not "this needed one"; see `reference/rule-map.md` |
+| Physical postal address present | `AUTOMATED` | |
+| Opt-out present, not fee-gated, not multi-step | `AUTOMATED` | one gate, two boundaries, same pass |
+| Opt-out honored within 10 business days | `OUT-OF-SCOPE` | a static single-email auditor can't observe what happens after sending |
+| Monitoring third-party senders | `OUT-OF-SCOPE` | a static single-email auditor can't observe a third party's ongoing conduct |
+
+Full mapping — citation, exact quoted text, which function checks it — in [`reference/rule-map.md`](reference/rule-map.md). The regulation and the FTC's guide are reproduced near-verbatim in `reference/` (both are US federal government works, public domain under 17 U.S.C. §105) — open a finding, open the cited section, check the words match. `audit.py --selftest` checks that mechanically too (every finding's quote is verified as an actual substring of `reference/` before the selftest can pass).
+
+**What "AUTOMATED" means here, provably:** `--selftest` includes a label-integrity pass that reads the source of every `AUTOMATED`-tagged check function and fails if any of them references a network or LLM-call token. The label isn't a comment — it's checked.
+
+## What this is not
+
+Not a legal compliance certification. A clean report means the four fully-automated structural checks passed, and the subject line didn't trip the one narrow deception pattern this tool can check mechanically — not "this business is CAN-SPAM compliant." Two real requirements aren't checked at all, by design, and the report says so every run. See `rules.md` for the exact refusal language this specialist uses when asked to overclaim.
+
+Not a multi-standard compliance tool. It checks one Act. Scope stays narrow on purpose — see `rules.md` § Never.
+
+**Not usable without code execution.** This is instructions-plus-a-script, not a hosted service. Load the ICM layer into an environment that can't actually run `audit.py` (a chat-only context with the files pasted in, a Project with no code tool enabled) and there is no automated engine at all — `rules.md` tells the specialist to say so plainly rather than narrate a guess as a real finding. See `identity.md` § What you need to do the job.
+
+### Known parser limitations
+
+`audit.py` reads text — it doesn't render HTML or look at images. Two consequences worth knowing before trusting a clean run:
+
+- **An address or opt-out link that exists only as an image** (a graphic with no real text behind it) is invisible to every check that looks for it — this reads as a FAIL, correctly, since the auditor genuinely found no text-based instance, but a human should confirm there isn't a real one hiding in a graphic.
+- **The body-text extraction prefers whichever of `text/plain` / `text/html` has more content** (see `audit.py`'s `get_body_text()`) specifically to avoid reading a near-empty "view in browser" stub instead of the real HTML content — a real ESP pattern, not a hypothetical. If a genuine future edge case defeats that heuristic, the fix belongs in the parser, not in loosening any rule's pattern.
+
+## Go-beyond (built or scoped, priority order)
+
+1. **SARIF output** — `--sarif`, ships today, plugs into GitHub Code Scanning / VS Code Problems panel.
+2. **GitHub Action** — `.github/workflows/selftest.yml`, ships today, runs `--selftest` on every push/PR (the badge at the top of this file). A PR-triggered checker against real email templates in version control is the natural next extension of the same workflow.
+3. **Drift tracking** across two versions of the same template — not yet built.
+
+## Repo layout
+
+```
+audit.py                    ← the whole engine, stdlib only
+.github/workflows/selftest.yml  ← CI: runs --selftest on every push/PR
+fixtures/                   ← one clean base email + one broken variant per rule, generated by fixtures/generate_fixtures.py
+reference/
+  16-cfr-part-316.md        ← verbatim regulation text
+  ftc-compliance-guide.md   ← verbatim FTC compliance guide
+  rule-map.md               ← rule → citation → tag → check function
+identity.md / rules.md / examples.md   ← the ICM specialist layer (load this repo into a Claude Project *with a code-execution tool enabled* to get an assistant that runs the checker and explains findings honestly — without code execution there's no automated engine, and rules.md tells the specialist to say so rather than fake it)
+docs/index.html             ← this repo's own landing page (GitHub Pages)
+```
+
+## Sources
+
+- FTC, *"CAN-SPAM Act: A Compliance Guide for Business"* — `ftc.gov/business-guidance/resources/can-spam-act-compliance-guide-business`
+- 16 CFR Part 316, via Cornell Law School Legal Information Institute — `law.cornell.edu/cfr/text/16/part-316`
+
+Both are US federal government works (public domain, 17 U.S.C. §105). Full text reproduced in `reference/`.
+
+## License
+
+MIT — see `LICENSE`.
