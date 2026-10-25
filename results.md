@@ -2,7 +2,7 @@
 
 Arm A is `original/`, the judged commit `5502381`. Arm B is `rebuild/`. Both arms ran through `./run-questions.sh <arm>`. The raw output is in `run-original/` and `run-rebuild/`, and each folder's `summary.txt` has the one-line verdicts.
 
-Every verdict is a literal string or exit-code check, written in `run-questions.sh`. That script and `questions.md` were committed in commit 2, before `rebuild/` existed, and neither has changed since. We wrote the questions ourselves, from the judges' feedback, so the questions are ours and not an independent test.
+Every verdict is a literal string or exit-code check, written in `run-questions.sh`. That script and `questions.md` were committed in commit 2, before `rebuild/` was committed, and neither has changed since. We wrote the questions ourselves, from the judges' feedback, so the questions are ours and not an independent test.
 
 ## Question by question
 

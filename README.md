@@ -19,7 +19,7 @@ You need Python 3 and bash, nothing else. Each run copies the arm to a temp fold
 ## Read in this order
 
 1. [`feedback.md`](feedback.md): the judges' read of the original.
-2. [`questions.md`](questions.md): eight questions, six from the feedback and two no-regression checks. It was committed before `rebuild/` existed and hasn't changed since.
+2. [`questions.md`](questions.md): eight questions, six from the feedback and two no-regression checks. It was committed before `rebuild/` was committed and hasn't changed since.
 3. [`results.md`](results.md): A vs B question by question, the ties, what is still weak, and what we left alone on purpose.
 4. [`rebuild/README.md`](rebuild/README.md): what the rebuilt auditor does, and its known limits.
 
