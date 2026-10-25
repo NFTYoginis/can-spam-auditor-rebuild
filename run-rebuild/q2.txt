@@ -4,6 +4,8 @@ $ python3 audit.py fixtures/clean.eml
 
 **0 FAIL** / 4 PASS / 1 NEEDS-REVIEW / 2 out of scope
 
+✗ **1 quote-check failure(s)** (rule-5-opt-out): a quoted line is not under the provision its finding cites. Treat this report as unreliable until that's fixed.
+
 ## [PASS] Accurate header information — `AUTOMATED`
 - **Rule:** rule-1-header-accuracy  
 - **Citation:** 16 CFR §316.2(m) (✓ quote verified in reference/, under the provision cited)  
@@ -47,4 +49,4 @@ $ python3 audit.py fixtures/clean.eml
 - **Quoted:** "you can't contract away your legal responsibility to comply with the law"  
 - Auditing a third party's ongoing conduct is not something a single static artifact can check. Named here rather than silently omitted.
 
-[exit 0]
+[exit 3]
