@@ -58,3 +58,7 @@ diff <(grep -v '^<!-- /\?anchor:' rebuild/reference/ftc-compliance-guide.md) ori
 ```
 
 `rebuild/reference/15-usc-7704-a5.md` is new. It was taken from Cornell LII on 2026-10-25 and holds paragraph (a)(5) only.
+
+## After the honesty gate
+
+**2026-10-25:** after Research's honesty gate, a quote-check failure in `rebuild/` now prints a `✗` line in the report header and exits `3`, which outranks `1`. A malformed `reference/` exits `3` too. We re-ran `./run-questions.sh rebuild`: only the raw Q1 and Q2 output changed (the header line, and exit `0` → `3`). The totals did not change: A 2 of 8, B 8 of 8.
