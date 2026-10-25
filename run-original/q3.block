@@ -1,0 +1,6 @@
+## [FAIL] Valid physical postal address present — `AUTOMATED`
+- **Rule:** rule-4-postal-address  
+- **Citation:** 16 CFR §316.2(p) (✓ quote verified in reference/)  
+- **Quoted:** ""Valid physical postal address" means the sender's current street address, a Post Office box the sender has accurately registered with the United States Postal Service, or a private mailbox the sender has accurately registered with a commercial mail receiving agency that is established pursuant to United States Postal Service regulations"  
+- No street address, PO Box, or ZIP-code-shaped pattern found in the body.
+

@@ -1,0 +1,12 @@
+arm: original
+python: Python 3.9.6
+grading: literal string / exit-code checks, defined in run-questions.sh
+
+Q1  FAIL    postal-address finding still prints '✓ quote verified'
+Q2  FAIL    opt-out finding still prints '✓ quote verified'
+Q3  FAIL    FAIL finding does not cite 15 U.S.C. 7704(a)(5)(A)(iii)
+Q4  FAIL    opt-out finding is not FAIL: ## [PASS] Working, one-step, no-fee opt-out mechanism — `AUTOMATED`
+Q5  FAIL    opt-out finding is not FAIL: ## [PASS] Working, one-step, no-fee opt-out mechanism — `AUTOMATED`
+Q6  FAIL    self-test stays green with the quote check forced true
+Q7  PASS    4/4 clean fixtures: no FAIL, no quote-check failure
+Q8  PASS    exit 2, no report
