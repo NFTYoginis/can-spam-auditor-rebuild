@@ -24,6 +24,10 @@ can-spam-auditor --selftest
 [PASS] bad-extra-info-optout.eml: fails only rule-5-opt-out, as designed
 [PASS] bad-info-gated-optout.eml: fails only rule-5-opt-out, as designed
 [PASS] clean-optout-asks-email-only.eml: clean fixture fully passes (4 automated checks)
+[PASS] clean-optout-says-free.eml: clean fixture fully passes (4 automated checks)
+[PASS] bad-fee-behind-no-fee-wording.eml: fails only rule-5-opt-out, as designed
+[PASS] clean-optout-removed-from-list.eml: clean fixture fully passes (4 automated checks)
+[PASS] bad-removed-from-list-info-gated.eml: fails only rule-5-opt-out, as designed
 [PASS] clean-html-only-entities.eml: clean fixture fully passes (4 automated checks)
 [PASS] clean-view-in-browser-stub.eml: clean fixture fully passes (4 automated checks)
 [PASS] clean-longform-commercial-pitch.eml: clean fixture fully passes (4 automated checks)

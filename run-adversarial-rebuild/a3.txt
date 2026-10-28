@@ -33,7 +33,7 @@
 - **Rule:** rule-5-opt-out  
 - **Citation:** 16 CFR §316.5 (✓ quote verified in reference/, under the provision cited)  
 - **Quoted:** "Neither a sender nor any person acting on behalf of a sender may require that any recipient pay any fee, provide any information other than the recipient's electronic mail address and opt-out preferences, or take any other steps except sending a reply electronic mail message or visiting a single Internet Web page"  
-- No opt-out / unsubscribe language found in the body at all.
+- Opt-out language is present but asks the recipient for information beyond their email address (zip code, reason for) — §316.5 bars requiring "any information other than the recipient's electronic mail address and opt-out preferences".
 
 ## [SKIPPED] Opt-out honored within 10 business days — `OUT-OF-SCOPE`
 - **Rule:** rule-6-prompt-honor  
