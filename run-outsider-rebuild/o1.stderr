@@ -1,0 +1,2 @@
+error: o1.eml has zero recognizable email headers (no From, To, Subject, Date, or any other RFC 5322 header field was found at all). This doesn't look like raw email source -- audit.py refuses to produce a report against it rather than generate findings that would look real but aren't. If this is genuinely a raw email, confirm it wasn't double-encoded, re-wrapped, or saved as rendered text instead of source (most clients: "View Original" / "Show source" / "Download .eml").
+exit: 2

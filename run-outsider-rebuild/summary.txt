@@ -1,0 +1,7 @@
+arm: rebuild
+python: Python 3.9.6
+O1  PASS    exit 2, no report
+O2  PASS    exit 1, audited, OUT-OF-SCOPE named
+O3  PASS    exit 1
+O4  PASS    exit 0, quotes verified, OUT-OF-SCOPE named
+O5  PASS    exit 1
