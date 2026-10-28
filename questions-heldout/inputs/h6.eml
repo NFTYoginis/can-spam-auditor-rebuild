@@ -1,0 +1,44 @@
+Date: Tue, 27 Oct 2026 09:14:02 -0700
+Message-ID: <80547@mail.brightleaf.example>
+MIME-Version: 1.0
+From: =?UTF-8?B?QnJpZ2h0bGVhZiBUZWEg4piV?= <hello@brightleaf.example>
+To: customer@gmail.example
+Subject: =?UTF-8?Q?Spring_blends_are_here_=E2=80=94_15=25_off?=
+Content-Type: multipart/mixed; boundary="MIX"
+
+--MIX
+Content-Type: multipart/alternative; boundary="ALT"
+
+--ALT
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Your email client does not show HTML. Please view this message in your browser.
+
+--ALT
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: base64
+
+PGh0bWw+PGJvZHk+PHRhYmxlIHdpZHRoPSI2MDAiPjx0cj48dGQ+U3ByaW5nIGJsZW5kcyBhcmUg
+aGVyZS48L3RkPjwvdHI+Cjx0cj48dGQ+PGEgaHJlZj0iaHR0cHM6Ly9icmlnaHRsZWFmLmV4YW1w
+bGUvc3ByaW5nIj5TaG9wIG5vdzwvYT48L3RkPjwvdHI+Cjx0cj48dGQgc3R5bGU9ImZvbnQtc2l6
+ZToxMXB4Ij5UaGlzIGlzIGFuIGFkdmVydGlzZW1lbnQuPC90ZD48L3RyPgo8dHI+PHRkIHN0eWxl
+PSJmb250LXNpemU6MTFweCI+PHRhYmxlPjx0cj48dGQ+QnJpZ2h0bGVhZiZuYnNwO1RlYSZuYnNw
+O0NvLjwvdGQ+PHRkPjQxMCZuYnNwO0FsZGVyJm5ic3A7U3RyZWV0JiM0NDs8L3RkPjx0ZD5TdWl0
+ZSZuYnNwOzMmIzQ0OzwvdGQ+PHRkPlBvcnRsYW5kJiM0NDs8L3RkPjx0ZD5PUjwvdGQ+PHRkPjk3
+MjA5PC90ZD48L3RyPjwvdGFibGU+PC90ZD48L3RyPgo8dHI+PHRkIHN0eWxlPSJmb250LXNpemU6
+MTFweCI+Tm8gbG9uZ2VyIHdhbnQgdGhlc2U/IDxhIGhyZWY9Imh0dHBzOi8vYnJpZ2h0bGVhZi5l
+eGFtcGxlL3Vuc3ViIj5VbnN1YnNjcmliZTwvYT4gaW4gb25lIGNsaWNrLCBubyBsb2dpbiBuZWVk
+ZWQuPC90ZD48L3RyPgo8L3RhYmxlPjwvYm9keT48L2h0bWw+
+
+--ALT--
+
+--MIX
+Content-Type: application/pdf; name="catalogue.pdf"
+Content-Disposition: attachment; filename="catalogue.pdf"
+Content-Transfer-Encoding: base64
+
+JVBERi0xLjQgQnJpZ2h0bGVhZiBjYXRhbG9ndWUuIFVuc3Vic2NyaWJlIGZlZSAkNS4gMSBGYWtl
+IFJk
+
+--MIX--

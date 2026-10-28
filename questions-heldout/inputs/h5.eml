@@ -1,0 +1,19 @@
+Date: Tue, 27 Oct 2026 09:14:02 -0700
+Message-ID: <85266@mail.brightleaf.example>
+MIME-Version: 1.0
+From: Brightleaf Orders <orders@brightleaf.example>
+To: customer@gmail.example
+Subject: Your order #48213 has shipped
+Content-Type: text/plain; charset=utf-8
+
+Hi Sam,
+
+Your order #48213 shipped today via USPS. Tracking: 9400 1118 9922 3344 5566 77.
+Estimated delivery: Friday, Oct 30.
+
+Items: 2 x Sencha 100g, 1 x Gaiwan.
+Total charged: $58.40
+
+P.S. Since you ordered, here is 20% off your next order with code THANKS20.
+
+Questions about this shipment? Reply to this email.
