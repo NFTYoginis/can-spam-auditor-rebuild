@@ -293,6 +293,29 @@ FIXTURES = {
         "https://sunriseyoga.example/unsubscribe\n"
     )),
 
+    # Comp #15 adversarial round (2026-10-28). Worded differently from
+    # questions-adversarial/inputs/ on purpose.
+    # Must PASS: saying the opt-out is free is not fee-gating it.
+    "clean-optout-says-free.eml": base_message(body=_with_optout(
+        "You can unsubscribe at any time, free of charge, at "
+        "https://sunriseyoga.example/unsubscribe. There is no fee.\n"
+    )),
+    # Must FAIL: a "no fee" phrase must not hide a real dollar amount.
+    "bad-fee-behind-no-fee-wording.eml": base_message(body=_with_optout(
+        "No fee for members; everyone else pays $3 to unsubscribe at "
+        "https://sunriseyoga.example/unsubscribe\n"
+    )),
+    # Must PASS: an opt-out worded without "unsubscribe" is still found.
+    "clean-optout-removed-from-list.eml": base_message(body=_with_optout(
+        "To be removed from our mailing list, reply with the word REMOVE.\n"
+    )),
+    # Must FAIL on the third bar, reached through the same wording.
+    "bad-removed-from-list-info-gated.eml": base_message(body=_with_optout(
+        "If you'd like to be removed from our mailing list, we need your "
+        "postal code and date of birth first: "
+        "https://sunriseyoga.example/unsubscribe\n"
+    )),
+
     # Messy-but-compliant fixtures — same content as the base, shaped like
     # real-world ESP output rather than clean synthetic plain text. All of
     # these must fully PASS; see fixtures/manifest.md § Parser robustness.

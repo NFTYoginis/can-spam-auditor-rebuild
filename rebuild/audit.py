@@ -448,9 +448,25 @@ def check_postal_address(body_text: str) -> Finding:
 _OPTOUT_PRESENT = re.compile(
     r"\b(unsubscribe|opt[- ]out|stop receiving|stop these emails|"
     r"no longer (wish to |want to )?receive|"
-    r"(manage|update) (your )?(email )?preferences)\b", re.I,
+    r"(manage|update) (your )?(email )?preferences|"
+    # Comp #15 adversarial case a3: "To be removed from our list, ..." is an
+    # opt-out with no "unsubscribe" in it.
+    r"(be |get )?removed from (our|the|this|my) (mailing |email |e-mail )?list|"
+    r"(take|remove) (you|yourself|me) (off|from) (our|the|this|my) "
+    r"(mailing |email |e-mail )?list)\b", re.I,
 )
 _FEE_LANGUAGE = re.compile(r"(\$\s?\d|\bfee\b|\bcharge\b|payment required|pay to)", re.I)
+# Comp #15 adversarial cases a1, a5, a6: "No fee applies." next to an honest
+# unsubscribe link FAILed as fee-gated. Negated fee phrases are removed from
+# the window before _FEE_LANGUAGE runs. A dollar amount is never negated, so
+# "No fee for members; others pay $3" still FAILs.
+_FEE_NEGATED = re.compile(
+    r"\b(no|without( any)?|zero) (fees?|charges?|cost)( (applies|apply|is charged|required))?\b|"
+    r"\bfree of charge\b|\bat no (cost|charge)\b|"
+    r"\bthere(?: is|'s) no (fee|charge|cost)\b|"
+    r"\b(never|won't|will not|do not|don't) charge\b|"
+    r"\bfees? (do|does) not apply\b", re.I,
+)
 _MULTISTEP_LANGUAGE = re.compile(
     r"\b(call us|call \(|mail a letter|send a letter|log in to your account|"
     r"sign in to your account|visit our office)\b", re.I,
@@ -519,7 +535,7 @@ def check_opt_out(body_text: str) -> Finding:
         )
 
     window = body_text[max(0, match.start() - 150): match.end() + 150]
-    if _FEE_LANGUAGE.search(window):
+    if _FEE_LANGUAGE.search(_FEE_NEGATED.sub(" ", window)):
         return Finding(
             "rule-5-opt-out", "Working, one-step, no-fee opt-out mechanism",
             "16 CFR §316.5", quote, "AUTOMATED", "FAIL",
@@ -736,6 +752,12 @@ FIXTURE_MANIFEST = {
     "bad-info-gated-optout.eml": "rule-5-opt-out",
     # Asking for the email address alone is allowed; must not trip the bar.
     "clean-optout-asks-email-only.eml": None,
+    # Comp #15 adversarial round (2026-10-28): negated fee wording,
+    # opt-outs worded without "unsubscribe".
+    "clean-optout-says-free.eml": None,
+    "bad-fee-behind-no-fee-wording.eml": "rule-5-opt-out",
+    "clean-optout-removed-from-list.eml": None,
+    "bad-removed-from-list-info-gated.eml": "rule-5-opt-out",
     # Parser-robustness fixtures — same content as clean.eml, shaped like
     # real-world ESP output (HTML-only + entities; a near-empty "view in
     # browser" text/plain stub next to the real HTML content). Both must
