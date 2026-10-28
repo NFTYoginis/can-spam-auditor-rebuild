@@ -14,14 +14,20 @@ jobs:
       - name: Run the eight questions against arm B (rebuild/)
         run: ./run-questions.sh rebuild
 
+      - name: Outsider questions, both arms
+        run: ./run-outsider.sh original && ./run-outsider.sh rebuild
+
+      - name: Adversarial cases, both arms
+        run: ./run-adversarial.sh original && ./run-adversarial.sh rebuild
+
       - name: Rebuild self-test
         run: python3 rebuild/audit.py --selftest
 
       # The raw output is committed. Fail if any verdict differs from it;
       # the python: line is ignored because the runner's version differs.
       - name: Verdicts match the committed runs
-        run: git diff --exit-code -I '^python:' -- run-original/summary.txt run-rebuild/summary.txt
+        run: git diff --exit-code -I '^python:' -- run-original/summary.txt run-rebuild/summary.txt run-outsider-*/summary.txt run-adversarial-*/summary.txt
 
       - name: Any other difference from the committed raw output (informational)
         if: always()
-        run: git diff --stat -- run-original run-rebuild
+        run: git diff --stat -- run-original run-rebuild run-outsider-* run-adversarial-*

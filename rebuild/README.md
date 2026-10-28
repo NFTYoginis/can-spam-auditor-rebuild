@@ -20,10 +20,11 @@ This folder is arm B of [the rebuild repo](../README.md). The judged original is
 
 ## Tested by trying to break it
 
-This build has been broken three times by people trying to break it. Each break is dated and linked to a commit.
+This build has been broken by people, and by sessions, trying to break it. Each break is dated and linked to a commit.
 
 - **2026-09-05, garbage input.** An adversarial test fed `audit.py` plain prose with no headers and got back a fully formed "4 FAIL" report citing real CFR text. Fixed the same day with a hard refusal (`NotAnEmailError`, exit 2) that still audits a real email that is only missing its From header. Commit [`4d35421`](https://github.com/NFTYoginis/can-spam-auditor/commit/4d35421). `--judge-mode` checks (a) and (b) re-run this.
 - **The same week, real copy.** Professionally drafted marketing emails showed that the ad-disclosure check FAILed content that §316.3's primary-purpose exemption may cover. That FAIL message now says so. Commit [`989a8a3`](https://github.com/NFTYoginis/can-spam-auditor/commit/989a8a3).
+- **2026-10-28, two sessions that only read this README.** One wrote five questions and the other six cases aimed at breaking it. The second found that "No fee applies." next to an unsubscribe link FAILed as a fee-gated opt-out, and that "To be removed from our list" wasn't recognised as an opt-out. Both are fixed, with fixtures, in commit [`dce691e`](https://github.com/NFTYoginis/can-spam-auditor-rebuild/commit/dce691e), and both arms' before-and-after runs are committed. See [`../results.md`](../results.md#questions-we-didnt-write).
 - **Comp #12 judges, at commit [`5502381`](https://github.com/NFTYoginis/can-spam-auditor/tree/5502381).** With the quotes left untouched, they swapped `§316.2(p)` to `§316.2(o)` and `§316.5` to `§316.4`. The original printed "✓ quote verified" beside both, and `--selftest` stayed green. Separately, an unsubscribe line demanding a full name, a mailing address and an account number PASSed. This rebuild is the answer to both. Each fix is re-tested by a question in [`../questions.md`](../questions.md), and the raw runs of both arms are in [`../run-original/`](../run-original/) and [`../run-rebuild/`](../run-rebuild/).
 
 ## Run it
@@ -44,6 +45,31 @@ python3 audit.py --judge-mode                          # the three adversarial c
 | `2` | The input isn't an email, or no input was given. No report is printed |
 | `3` | A quote-check failure: some finding's quote is not under the provision it cites, or `reference/` has a malformed anchor. The report header says which findings are affected. This outranks `1`, because a report with a misattributed quote can't be trusted either way |
 
+## What a report looks like
+
+The start of `python3 audit.py fixtures/bad-no-postal-address.eml` (exit `1`), with the long quotes cut:
+
+```
+# CAN-SPAM audit — bad-no-postal-address.eml
+
+**1 FAIL** / 3 PASS / 1 NEEDS-REVIEW / 2 out of scope
+
+## [PASS] Accurate header information — `AUTOMATED`
+- **Rule:** rule-1-header-accuracy
+- **Citation:** 16 CFR §316.2(m) (✓ quote verified in reference/, under the provision cited)
+...
+## [FAIL] Valid physical postal address present — `AUTOMATED`
+- **Rule:** rule-4-postal-address
+- **Citation:** 15 U.S.C. 7704(a)(5)(A)(iii); 16 CFR §316.2(p) (✓ quote verified in reference/, under the provision cited)
+- **Quoted, 15 U.S.C. 7704(a)(5)(A)(iii):** "a valid physical postal address of the sender" (in that provision)
+- **Quoted, 16 CFR §316.2(p):** ""Valid physical postal address" means the sender's current street address, ..." (in that provision)
+- No street address, PO Box, or ZIP-code-shaped pattern found in the body.
+...
+## [SKIPPED] Opt-out honored within 10 business days — `OUT-OF-SCOPE`
+```
+
+Each finding is a `## [STATUS] label — TAG` heading. A quote that is not under its cited provision prints `✗ QUOTE NOT FOUND under <provision>` in place of the `✓`, and also in the report header. `--json` gives the same findings as data.
+
 ## What it checks
 
 | Rule | Citation(s) | Tag |
@@ -61,7 +87,8 @@ The full mapping is in [`reference/rule-map.md`](reference/rule-map.md).
 ## Known limits
 
 - **The third §316.5 bar is a word list.** It catches the personal fields it names, in the sentence holding the opt-out cue and the sentence after it, when that text also contains a request word ("enter", "provide", "with your", "required" and similar). It misses fields it doesn't name, requests worded without any of those cues, requests placed further from the opt-out line, anything in another language, and anything the unsubscribe page asks for that the email itself doesn't mention.
-- **The fee and multi-step bars are unchanged from the original.** They still use a 150-character window around the first opt-out cue.
+- **The fee and multi-step bars still use a 150-character window around the first opt-out cue.** Since 2026-10-28, negated fee wording ("No fee applies", "free of charge") is ignored, so it no longer FAILs an honest opt-out. That is a word list too, and a dollar amount is never treated as negated.
+- **Opt-out language is a word list.** It covers "unsubscribe", "opt out", "stop receiving", "manage preferences", "removed from our list" and similar. An opt-out worded some other way is reported as missing.
 - **It reads text.** An address or opt-out link that exists only inside an image is invisible to it.
 - **A clean report is not "compliant".** It means the automated structural checks found nothing. Two requirements are not checked at all, and the report says so on every run.
 

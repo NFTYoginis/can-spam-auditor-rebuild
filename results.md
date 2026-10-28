@@ -2,7 +2,7 @@
 
 Arm A is `original/`, the judged commit `5502381`. Arm B is `rebuild/`. Both arms ran through `./run-questions.sh <arm>`. The raw output is in `run-original/` and `run-rebuild/`, and each folder's `summary.txt` has the one-line verdicts.
 
-Every verdict is a literal string or exit-code check, written in `run-questions.sh`. That script and `questions.md` were committed in commit 2, before `rebuild/` was committed, and neither has changed since. We wrote the questions ourselves, from the judges' feedback, so the questions are ours and not an independent test.
+Every verdict is a literal string or exit-code check, written in `run-questions.sh`. That script and `questions.md` were committed in commit 2, before `rebuild/` was committed, and neither has changed since. We wrote the questions ourselves, from the judges' feedback, so the questions are ours and not an independent test. Two sets we did not write are below, under [Questions we didn't write](#questions-we-didnt-write).
 
 ## Question by question
 
@@ -19,6 +19,44 @@ Every verdict is a literal string or exit-code check, written in `run-questions.
 
 **Totals: A passes 2 of 8 and B passes 8 of 8**, on questions we wrote, with `python3` 3.9.6 on macOS. Q7 and Q8 tie. No question got worse.
 
+## Questions we didn't write
+
+**2026-10-28.** On the last day, we gave two fresh Claude sessions one file each, `rebuild/README.md`, and told them to open nothing else. Neither could run the tool. Each wrote its own inputs and its own pass bars, and each file was committed before either arm was run against it. Both files are unedited, and neither has changed since. They are model-written, not human, and they only know what the README told them.
+
+**Set 1: [`questions-outsider.md`](questions-outsider.md), five questions** on what a careful user would want to know first. Run with `./run-outsider.sh <arm>`.
+
+| Q | What it asks | A | B |
+|---|---|---|---|
+| O1 | Plain prose, no headers: refused with exit 2? | PASS | PASS |
+| O2 | A real email with no From header: audited, not refused? | PASS | PASS |
+| O3 | Unsubscribe asks for full name, mailing address and account number: FAIL? | **FAIL** (exit 0) | PASS |
+| O4 | Unsubscribe asks for the email address only: still passes? | PASS | PASS |
+| O5 | Postal address only inside an image: reported missing? | PASS | PASS |
+
+**A 4 of 5, B 5 of 5.** This set mostly re-asks what we already test: O3 is our Q4 in other words, and O1 and O2 are `--judge-mode`'s checks. We checked that every pass came from the finding it should have, not from a matching exit code: O3 is the opt-out finding, O5 the postal finding. It is an easy set, and we read it as such.
+
+**Set 2: [`questions-adversarial.md`](questions-adversarial.md), six cases**, from a second session told to aim each case at a place where the README's promises might break. Run with `./run-adversarial.sh <arm>`.
+
+| Case | What it tries | A | B before fix | B after fix |
+|---|---|---|---|---|
+| a1 | Quoted-printable HTML; "No fee applies." beside the unsubscribe link | **FAIL**: false fee FAIL | **FAIL**: same | PASS |
+| a2 | Base64 HTML; PO Box split across `<br>` lines | PASS | PASS | PASS |
+| a3 | "To be removed from our list, we'll need your ZIP code and a reason for leaving" | PASS, wrong reason | PASS, **wrong reason** | PASS |
+| a4 | No From header | PASS | PASS | PASS |
+| a5 | CRLF, folded From, RFC 2047 subject; "No fee applies." | **FAIL**: false fee FAIL | **FAIL**: same | PASS |
+| a6 | "Fwd: Your invoice is ready" on a promo | PASS | PASS, plus a false fee FAIL the bar didn't look at | PASS |
+
+**Before the fix, both arms passed 4 of 6, and B's a3 pass was not a real pass.** The case's bar was exit 1 with `316.5` cited, and it got both, but the FAIL said *no opt-out language found at all*. "Removed from our list" wasn't recognised as an opt-out, so the third §316.5 bar never ran. A literal bar can be met for the wrong reason. We only caught it by reading the finding behind each verdict.
+
+Two real defects, both in the original as well:
+
+1. **The fee bar didn't read negation.** "No fee applies." within 150 characters of an opt-out was a fee-gated opt-out. Three of the six cases tripped it.
+2. **The opt-out cue list didn't include "removed from our list".**
+
+**The fix** (commit `dce691e`): negated fee phrases ("no fee", "free of charge", "at no cost", "there is no charge" and similar) are removed from the window before the fee check runs, but a dollar amount is never negated. Opt-out cues now include "removed from our list" and "take you off our list". Four new self-test fixtures pin both fixes. They are worded differently from the cases, and one checks that "No fee for members; everyone else pays $3" still FAILs. Afterwards, B passes 6 of 6. On our own eight questions B is still 8 of 8, and on set 1 it is still 5 of 5. Only `run-rebuild/q6.txt` changed, gaining four self-test lines.
+
+**Read the 6 of 6 for what it is.** We wrote the fix after seeing these six cases, so passing them afterwards is not independent evidence. The pre-fix run is committed (`1bd595c`) so that the before can be checked. A third session that has not seen the fix would be the next real test, and we have not run one.
+
 ## Ties
 
 - **Q7.** This is where the rebuild could have got worse. A section check drawn too tightly would reject a real quote. It didn't: all seven findings on all four clean fixtures verify under the provision they cite. The tightest case is rule 2, which cites `§316.3(a)(2)` while its quote sits in `(a)(2)(i)`. That passes because anchors nest. A citation to a paragraph covers its subparagraphs, and a citation to a subparagraph covers only itself.
@@ -33,7 +71,9 @@ Every verdict is a literal string or exit-code check, written in `run-questions.
 - **New false-FAIL risk.** The original could not FAIL an opt-out for asking for information, so it could not false-FAIL one either. The rebuild can, as shown above. Three new fixtures pin the behaviour: two that must FAIL, and one asking only for the email address that must PASS.
 - **Q1 in arm B, read closely.** The rebuilt postal finding carries two quotes: the duty under 7704(a)(5)(A)(iii) and the definition under `§316.2(p)`. The Q1 plant moves only the second. The finding-level line prints `✗ QUOTE NOT FOUND under 16 CFR §316.2(o)` with no `✓`, and the per-quote line still shows the 7704 quote as found "in that provision", because it is. We read Q1 as asking about the finding's verdict, and the harness checks that verdict.
 - **Anchors are a new way to fail.** A marker must be a whole line, and the provision key must match the printed citation after light normalisation (`C.F.R.` → `CFR`, `§ 316` → `§316`). A citation written some other way, or a provision nobody anchored, fails the quote check. We chose failing closed over passing a quote under a provision we can't locate. An unclosed or duplicate anchor stops the run with an error rather than guessing.
-- **Things dropped from `rebuild/`:** the CI workflow and the `docs/` landing page. Both are still in `original/`. The brief listed what `rebuild/` needed, and neither was on it.
+- **Negated fee wording is a word list too.** The fix above recognises the negations it names. "Unsubscribing costs nothing" is not one of them, and a price for something else within 150 characters of the opt-out can still read as a fee.
+- **The opt-out cue list is still a list.** It now includes "removed from our list". An opt-out phrased some other way is reported as missing.
+- **Things dropped from `rebuild/`:** the original's own CI workflow and the `docs/` landing page. Both are still in `original/`. The brief listed what `rebuild/` needed, and neither was on it. CI for this repo is at the root, in `.github/workflows/questions.yml`. It runs all three question sets on both arms and the rebuild self-test on every push.
 
 ## What we left alone on purpose
 
