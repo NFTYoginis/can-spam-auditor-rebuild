@@ -1,0 +1,24 @@
+From: Brightleaf Goods <news@brightleaf.example>
+Reply-To: news@brightleaf.example
+To: jane@example.net
+Date: Tue, 06 Oct 2026 09:00:00 -0700
+Subject: Fall sale starts today
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="BND"
+
+--BND
+Content-Type: text/plain; charset=utf-8
+
+Our fall sale starts today. Save 20% on everything.
+This is an advertisement.
+Unsubscribe: https://brightleaf.example/unsub
+
+--BND
+Content-Type: text/html; charset=utf-8
+
+<html><body><p>Our fall sale starts today. Save 20% on everything.</p>
+<p>This is an advertisement.</p>
+<p><a href="https://brightleaf.example/unsub">Unsubscribe</a></p>
+<img src="https://brightleaf.example/footer-address.png" alt="">
+</body></html>
+--BND--
