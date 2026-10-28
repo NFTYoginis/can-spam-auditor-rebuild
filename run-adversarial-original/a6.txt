@@ -1,0 +1,48 @@
+# CAN-SPAM audit — a6.eml
+
+**2 FAIL** / 3 PASS / 0 NEEDS-REVIEW / 2 out of scope
+
+⚠️ Each separate email in violation of the CAN-SPAM Act is subject to penalties of up to $53,088 (FTC, 2025 inflation-adjusted figure, reference/ftc-compliance-guide.md). Every email sent counts separately.
+
+## [PASS] Accurate header information — `AUTOMATED`
+- **Rule:** rule-1-header-accuracy  
+- **Citation:** 16 CFR §316.2(m) (✓ quote verified in reference/)  
+- **Quoted:** "The definition of the term "sender" is the same as the definition of that term in the CAN-SPAM Act, 15 U.S.C. 7702(16)"  
+- From header present and well-formed; Reply-To (if present) shares its domain.
+
+## [FAIL] Non-deceptive subject line — `AUTOMATED`
+- **Rule:** rule-2-subject-line  
+- **Citation:** 16 CFR §316.3(a)(2) (✓ quote verified in reference/)  
+- **Quoted:** "A recipient reasonably interpreting the subject line of the electronic mail message would likely conclude that the message contains the commercial advertisement or promotion of a commercial product or service"  
+- Subject line reads as transactional (e.g. 'Re:', 'invoice', 'account statement'), but the body opens with commercial/promotional content and no transactional content appears up front. Per §316.3(a)(2), that combination makes the message's primary purpose commercial for CAN-SPAM purposes — the subject line does not accurately reflect that.
+
+## [PASS] Message identified as an advertisement — `AUTOMATED`
+- **Rule:** rule-3-ad-disclosure  
+- **Citation:** FTC Compliance Guide (✓ quote verified in reference/)  
+- **Quoted:** "you must disclose clearly and conspicuously that your message is an advertisement"  
+- An explicit ad/marketing/promotional disclosure phrase is present in the body.
+
+## [PASS] Valid physical postal address present — `AUTOMATED`
+- **Rule:** rule-4-postal-address  
+- **Citation:** 16 CFR §316.2(p) (✓ quote verified in reference/)  
+- **Quoted:** ""Valid physical postal address" means the sender's current street address, a Post Office box the sender has accurately registered with the United States Postal Service, or a private mailbox the sender has accurately registered with a commercial mail receiving agency that is established pursuant to United States Postal Service regulations"  
+- A street-address-shaped pattern (or PO Box) is present in the body.
+
+## [FAIL] Working, one-step, no-fee opt-out mechanism — `AUTOMATED`
+- **Rule:** rule-5-opt-out  
+- **Citation:** 16 CFR §316.5 (✓ quote verified in reference/)  
+- **Quoted:** "Neither a sender nor any person acting on behalf of a sender may require that any recipient pay any fee, provide any information other than the recipient's electronic mail address and opt-out preferences, or take any other steps except sending a reply electronic mail message or visiting a single Internet Web page"  
+- Opt-out language is present but fee/charge/payment language appears in the same vicinity — §316.5 bars requiring any fee to opt out.
+
+## [SKIPPED] Opt-out honored within 10 business days — `OUT-OF-SCOPE`
+- **Rule:** rule-6-prompt-honor  
+- **Citation:** 16 CFR §316.5(b) (✓ quote verified in reference/)  
+- **Quoted:** "Have such a request honored as required by 15 U.S.C. 7704(a)(3)(B) and (a)(4)"  
+- A static single-email auditor has no way to observe what happens after the email is sent. Named here rather than silently omitted.
+
+## [SKIPPED] Monitoring third-party senders acting on your behalf — `OUT-OF-SCOPE`
+- **Rule:** rule-7-third-party-monitoring  
+- **Citation:** FTC Compliance Guide (✓ quote verified in reference/)  
+- **Quoted:** "you can't contract away your legal responsibility to comply with the law"  
+- Auditing a third party's ongoing conduct is not something a single static artifact can check. Named here rather than silently omitted.
+
