@@ -19,6 +19,7 @@ The question sets we didn't write run the same way:
 ```
 ./run-outsider.sh original && ./run-outsider.sh rebuild
 ./run-adversarial.sh original && ./run-adversarial.sh rebuild
+./run-heldout.sh original && ./run-heldout.sh rebuild
 ```
 
 You need Python 3 and bash, nothing else. Each run copies the arm to a temp folder, applies the plants for Q1, Q2 and Q6 there, and runs all eight questions. It rewrites `run-original/` or `run-rebuild/` and prints one verdict per question. To check that you reproduced our runs, run `git status --short run-original run-rebuild` afterwards. Only the `python:` line in `summary.txt` should differ, and only if your Python version isn't 3.9.6.
@@ -28,7 +29,7 @@ You need Python 3 and bash, nothing else. Each run copies the arm to a temp fold
 1. [`feedback.md`](feedback.md): the judges' read of the original.
 2. [`questions.md`](questions.md): eight questions, six from the feedback and two no-regression checks. It was committed before `rebuild/` was committed and hasn't changed since.
 3. [`results.md`](results.md): A vs B question by question, the ties, what is still weak, and what we left alone on purpose.
-4. [`results.md` § Questions we didn't write](results.md#questions-we-didnt-write): sessions given only `rebuild/README.md` wrote their own questions and pass bars, committed before any run. One set found two real defects; the before-and-after runs are both committed.
+4. [`results.md` § Questions we didn't write](results.md#questions-we-didnt-write): sessions given only `rebuild/README.md` wrote their own questions and pass bars, committed before any run. One set found two real defects, which we fixed, with both the before and after runs committed. A third, held-out set found one we left unfixed: an opt-out fee stated far below an early unsubscribe link is missed by both arms.
 5. [`rebuild/README.md`](rebuild/README.md): what the rebuilt auditor does, and its known limits.
 
 ## Layout
@@ -45,7 +46,8 @@ run-rebuild/           raw output, arm B
 results.md             A vs B, ties, limits, left alone
 questions-outsider.md  five questions a fresh session wrote from rebuild/README.md alone
 questions-adversarial.md  six break-it cases, same conditions
-run-outsider.sh, run-adversarial.sh, run-outsider-*/, run-adversarial-*/
+questions-heldout.md   six more, from a session that never saw the fix; not fixed against
+run-outsider.sh, run-adversarial.sh, run-heldout.sh, and their run-*/ output
 .github/workflows/     on every push: both arms, the rebuild self-test, and a check that verdicts match the committed runs
 ```
 

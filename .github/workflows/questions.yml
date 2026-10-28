@@ -20,14 +20,17 @@ jobs:
       - name: Adversarial cases, both arms
         run: ./run-adversarial.sh original && ./run-adversarial.sh rebuild
 
+      - name: Held-out cases, both arms
+        run: ./run-heldout.sh original && ./run-heldout.sh rebuild
+
       - name: Rebuild self-test
         run: python3 rebuild/audit.py --selftest
 
       # The raw output is committed. Fail if any verdict differs from it;
       # the python: line is ignored because the runner's version differs.
       - name: Verdicts match the committed runs
-        run: git diff --exit-code -I '^python:' -- run-original/summary.txt run-rebuild/summary.txt run-outsider-*/summary.txt run-adversarial-*/summary.txt
+        run: git diff --exit-code -I '^python:' -- run-original/summary.txt run-rebuild/summary.txt run-outsider-*/summary.txt run-adversarial-*/summary.txt run-heldout-*/summary.txt
 
       - name: Any other difference from the committed raw output (informational)
         if: always()
-        run: git diff --stat -- run-original run-rebuild run-outsider-* run-adversarial-*
+        run: git diff --stat -- run-original run-rebuild run-outsider-* run-adversarial-* run-heldout-*

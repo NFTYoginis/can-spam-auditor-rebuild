@@ -2,7 +2,7 @@
 
 Arm A is `original/`, the judged commit `5502381`. Arm B is `rebuild/`. Both arms ran through `./run-questions.sh <arm>`. The raw output is in `run-original/` and `run-rebuild/`, and each folder's `summary.txt` has the one-line verdicts.
 
-Every verdict is a literal string or exit-code check, written in `run-questions.sh`. That script and `questions.md` were committed in commit 2, before `rebuild/` was committed, and neither has changed since. We wrote the questions ourselves, from the judges' feedback, so the questions are ours and not an independent test. Two sets we did not write are below, under [Questions we didn't write](#questions-we-didnt-write).
+Every verdict is a literal string or exit-code check, written in `run-questions.sh`. That script and `questions.md` were committed in commit 2, before `rebuild/` was committed, and neither has changed since. We wrote the questions ourselves, from the judges' feedback, so the questions are ours and not an independent test. Three sets we did not write are below, under [Questions we didn't write](#questions-we-didnt-write).
 
 ## Question by question
 
@@ -55,7 +55,23 @@ Two real defects, both in the original as well:
 
 **The fix** (commit `dce691e`): negated fee phrases ("no fee", "free of charge", "at no cost", "there is no charge" and similar) are removed from the window before the fee check runs, but a dollar amount is never negated. Opt-out cues now include "removed from our list" and "take you off our list". Four new self-test fixtures pin both fixes. They are worded differently from the cases, and one checks that "No fee for members; everyone else pays $3" still FAILs. Afterwards, B passes 6 of 6. On our own eight questions B is still 8 of 8, and on set 1 it is still 5 of 5. Only `run-rebuild/q6.txt` changed, gaining four self-test lines.
 
-**Read the 6 of 6 for what it is.** We wrote the fix after seeing these six cases, so passing them afterwards is not independent evidence. The pre-fix run is committed (`1bd595c`) so that the before can be checked. A third session that has not seen the fix would be the next real test, and we have not run one.
+**Read the 6 of 6 for what it is.** We wrote the fix after seeing these six cases, so passing them afterwards is not independent evidence. The pre-fix run is committed (`1bd595c`) so that the before can be checked. Set 3 is the test that does count.
+
+**Set 3: [`questions-heldout.md`](questions-heldout.md), six held-out cases**, from a third session under the same conditions and the same pre-fix README. It never saw the fix or the other two sets. **We have not fixed anything against this set, and we won't before judging.** Run with `./run-heldout.sh <arm>`.
+
+| Case | What it tries | A | B |
+|---|---|---|---|
+| h1 | A memo that quotes From/To/Subject lines after a blank line: refused? | PASS | PASS |
+| h2 | Email-only opt-out, then "manage your account settings" in the next sentence: still clean? | PASS | PASS |
+| h3 | "reply to this email with your order number and we will take you off the list" | PASS, **wrong reason** | PASS |
+| h4 | "Unsubscribe" link at the top, "$2.00 processing fee" to opt out far below | **FAIL** (exit 0) | **FAIL** (exit 0) |
+| h5 | Shipping notice with a promo code; FAIL should mention the primary-purpose exemption | PASS | PASS |
+| h6 | Base64 HTML-only body, address split across table cells with entities, RFC 2047 headers, a PDF attachment that says "Unsubscribe fee $5" | PASS | PASS |
+
+**A 5 of 6, B 5 of 6, and the tie hides a difference.** A's h3 FAIL is *no opt-out language found*: it never recognised "take you off the list", so it never looked at what the opt-out asked for. B's h3 FAIL names the order number under §316.5. That is the round-2 cue fix reaching a wording it had not seen. It's one case, and we read it as no more than that.
+
+**h4 is a real miss in both arms, and it's the limit the README already names.** The fee and multi-step bars look 150 characters either side of the *first* opt-out cue. A preheader "Unsubscribe" link pulls that window to the top of the email, and the fee sentence ("Opting out of these emails carries a $2.00 processing fee...") sits outside it. "Opting out" isn't a cue either. An opt-out fee is the bar §316.5 names first, so this is the most serious open defect we know of. The fix is to check every opt-out cue's window, not just the first, but we are leaving it unfixed so that this set stays a clean test.
+
 
 ## Ties
 
@@ -73,7 +89,7 @@ Two real defects, both in the original as well:
 - **Anchors are a new way to fail.** A marker must be a whole line, and the provision key must match the printed citation after light normalisation (`C.F.R.` → `CFR`, `§ 316` → `§316`). A citation written some other way, or a provision nobody anchored, fails the quote check. We chose failing closed over passing a quote under a provision we can't locate. An unclosed or duplicate anchor stops the run with an error rather than guessing.
 - **Negated fee wording is a word list too.** The fix above recognises the negations it names. "Unsubscribing costs nothing" is not one of them, and a price for something else within 150 characters of the opt-out can still read as a fee.
 - **The opt-out cue list is still a list.** It now includes "removed from our list". An opt-out phrased some other way is reported as missing.
-- **Things dropped from `rebuild/`:** the original's own CI workflow and the `docs/` landing page. Both are still in `original/`. The brief listed what `rebuild/` needed, and neither was on it. CI for this repo is at the root, in `.github/workflows/questions.yml`. It runs all three question sets on both arms and the rebuild self-test on every push.
+- **Things dropped from `rebuild/`:** the original's own CI workflow and the `docs/` landing page. Both are still in `original/`. The brief listed what `rebuild/` needed, and neither was on it. CI for this repo is at the root, in `.github/workflows/questions.yml`. It runs every question set on both arms and the rebuild self-test on every push.
 
 ## What we left alone on purpose
 
@@ -81,7 +97,7 @@ Two real defects, both in the original as well:
 - **The refusals.** Garbage input still exits 2. A clean run still can't mean "compliant". The output schema still has nowhere for a fix to go. `--judge-mode` is unchanged.
 - **The two out-of-scope rules** (honoring an opt-out within 10 business days, and monitoring third-party senders). They are still named on every run and not checked. They now cite the exact provision or guide heading they quote.
 - **Rule 3 still cites the FTC guide**, now its "Identify the message as an ad" heading, even though 15 U.S.C. 7704(a)(5)(A)(i) is in `reference/` now. The feedback didn't raise it, and we kept the change set to what it did raise.
-- **The fee and multi-step bars.** They still scan 150 characters around the first opt-out cue. Only the new third bar uses sentence scope.
+- **The fee and multi-step bars.** They still scan 150 characters around the first opt-out cue. Only the new third bar uses sentence scope. Held-out case h4 shows what this costs: a fee stated far from an early "Unsubscribe" link is missed in both arms (see set 3 above).
 - **Primary-purpose classification (§316.3).** It is still not attempted, and the rule 3 and rule 5 messages still say so.
 
 ## About the 2026-09-18 fix in the old repo
