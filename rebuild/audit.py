@@ -793,6 +793,16 @@ CITATION_SWAPS = {
 }
 
 
+# Known limit, canaried as an EXPECTED PASS (not a defect the check can fix):
+# 16 CFR §316.3(a)(2)(i) and §316.3(a)(3)(i) carry the same sentence, so the
+# rule-2 quote verifies under a citation to either. An anchor check cannot
+# separate twin provisions. If this swap ever stops verifying, the limit is
+# gone and results.md / rebuild/README.md are stale, so the canary goes red.
+TWIN_SWAPS = {
+    "16 CFR §316.3(a)(2)": "16 CFR §316.3(a)(3)",
+}
+
+
 def check_citation_swaps() -> tuple[bool, list[str]]:
     """Take every (citation, quote) a real audit prints, move the citation
     to its neighbour, and require quote_is_grounded() to reject it."""
@@ -820,6 +830,19 @@ def check_citation_swaps() -> tuple[bool, list[str]]:
             else:
                 lines.append(f"[PASS] citation-swap canary: {f.rule_id} quote "
                              f"moved from {citation} to {swapped} is rejected")
+            twin = TWIN_SWAPS.get(provision_key(citation))
+            if twin is not None:
+                if quote_is_grounded(quote, twin, anchors):
+                    lines.append(f"[PASS] twin-provision canary (expected "
+                                 f"pass, documented limit): {f.rule_id} quote "
+                                 f"moved from {citation} to {twin} still "
+                                 "verifies, because both carry the same "
+                                 "sentence")
+                else:
+                    ok = False
+                    lines.append(f"[FAIL] twin-provision canary: {f.rule_id} "
+                                 f"quote no longer verifies under {twin}, so "
+                                 "the documented twin-sentence limit is stale")
     return ok, lines
 
 

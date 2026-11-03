@@ -2,9 +2,15 @@
 
 A rebuild of our Comp #12 entry, [`NFTYoginis/can-spam-auditor`](https://github.com/NFTYoginis/can-spam-auditor), as judged at commit [`5502381`](https://github.com/NFTYoginis/can-spam-auditor/tree/5502381). `original/` is `git archive 5502381` of that repo, untouched. `feedback.md` is the judges' file, verbatim.
 
-The line in the feedback that drove this rebuild:
+The three lines in the feedback that drove this rebuild, verbatim:
+
+> Anchor each quote to the section heading it sits under.
+
+> Implement the third bar in §316.5.
 
 > a citation that resolves but points at the wrong thing is the exact failure this competition is hunting
+
+To see exactly what changed between the judged auditor and the rebuild: `git diff --no-index original rebuild`
 
 The judged auditor checked that each quote existed *somewhere* in `reference/`. It never checked that the quote sat under the provision the finding cited. The rebuild checks each quote only inside the provision its citation names. It also adds the statute that creates the postal-address duty, and enforces the third §316.5 bar (no information beyond the email address).
 
