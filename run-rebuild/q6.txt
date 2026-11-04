@@ -5,6 +5,7 @@ can-spam-auditor --selftest
 [PASS] label-integrity: no AUTOMATED check function references network/LLM tokens (urllib, requests, httpx, http.client, socket, openai, anthropic, urlopen, os.environ)
 [FAIL] citation-swap canary: rule-1-header-accuracy quote moved from 16 CFR §316.2(m) to 16 CFR §316.2(n) was still verified -- the section check is not checking the section
 [FAIL] citation-swap canary: rule-2-subject-line quote moved from 16 CFR §316.3(a)(2) to 16 CFR §316.3(b) was still verified -- the section check is not checking the section
+[PASS] twin-provision canary (expected pass, documented limit): rule-2-subject-line quote moved from 16 CFR §316.3(a)(2) to 16 CFR §316.3(a)(3) still verifies, because both carry the same sentence
 [FAIL] citation-swap canary: rule-3-ad-disclosure quote moved from FTC Compliance Guide, "Identify the message as an ad" to FTC Compliance Guide, "Tell recipients where you're located" was still verified -- the section check is not checking the section
 [FAIL] citation-swap canary: rule-4-postal-address quote moved from 15 U.S.C. 7704(a)(5)(A)(iii) to 15 U.S.C. 7704(a)(5)(A)(ii) was still verified -- the section check is not checking the section
 [FAIL] citation-swap canary: rule-4-postal-address quote moved from 16 CFR §316.2(p) to 16 CFR §316.2(o) was still verified -- the section check is not checking the section

@@ -1,6 +1,8 @@
 # CAN-SPAM audit — h4.eml
 
-**0 FAIL** / 4 PASS / 1 NEEDS-REVIEW / 2 out of scope
+**1 FAIL** / 3 PASS / 1 NEEDS-REVIEW / 2 out of scope
+
+⚠️ Each separate email in violation of the CAN-SPAM Act is subject to penalties of up to $53,088 (FTC, 2025 inflation-adjusted figure, reference/ftc-compliance-guide.md). Every email sent counts separately.
 
 ## [PASS] Accurate header information — `AUTOMATED`
 - **Rule:** rule-1-header-accuracy  
@@ -27,11 +29,11 @@
 - **Quoted, 16 CFR §316.2(p):** ""Valid physical postal address" means the sender's current street address, a Post Office box the sender has accurately registered with the United States Postal Service, or a private mailbox the sender has accurately registered with a commercial mail receiving agency that is established pursuant to United States Postal Service regulations" (in that provision)  
 - A street-address-shaped pattern (or PO Box) is present in the body.
 
-## [PASS] Working, one-step, no-fee opt-out mechanism — `AUTOMATED`
+## [FAIL] Working, one-step, no-fee opt-out mechanism — `AUTOMATED`
 - **Rule:** rule-5-opt-out  
 - **Citation:** 16 CFR §316.5 (✓ quote verified in reference/, under the provision cited)  
 - **Quoted:** "Neither a sender nor any person acting on behalf of a sender may require that any recipient pay any fee, provide any information other than the recipient's electronic mail address and opt-out preferences, or take any other steps except sending a reply electronic mail message or visiting a single Internet Web page"  
-- Opt-out language is present with no fee-gating, multi-step, or extra-information language detected nearby. Scope note: this rule applies regardless of subscriber/membership status (FTC guide header 6) unless the message is genuinely transactional-or-relationship per §316.3(c) — this checker does not attempt that judgment.
+- Opt-out language is present but fee/charge/payment language appears in the same vicinity — §316.5 bars requiring any fee to opt out.
 
 ## [SKIPPED] Opt-out honored within 10 business days — `OUT-OF-SCOPE`
 - **Rule:** rule-6-prompt-honor  

@@ -3,6 +3,6 @@ python: Python 3.9.6
 H1  PASS    exit 2
 H2  PASS    exit 0
 H3  PASS    exit 1, 316.5 cited
-H4  FAIL    exit 0 (bar: 1)
+H4  PASS    exit 1, 316.5 cited
 H5  PASS    exit 1, 316.3 cited
 H6  PASS    exit 0
