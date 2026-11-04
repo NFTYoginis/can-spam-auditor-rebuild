@@ -446,7 +446,7 @@ def check_postal_address(body_text: str) -> Finding:
 # --------------------------------------------------------------------------
 
 _OPTOUT_PRESENT = re.compile(
-    r"\b(unsubscribe|opt[- ]out|stop receiving|stop these emails|"
+    r"\b(unsubscribe|opt(?:ing)?[- ]out|stop receiving|stop these emails|"
     r"no longer (wish to |want to )?receive|"
     r"(manage|update) (your )?(email )?preferences|"
     # Comp #15 adversarial case a3: "To be removed from our list, ..." is an
@@ -534,8 +534,12 @@ def check_opt_out(body_text: str) -> Finding:
             "No opt-out / unsubscribe language found in the body at all.",
         )
 
-    window = body_text[max(0, match.start() - 150): match.end() + 150]
-    if _FEE_LANGUAGE.search(_FEE_NEGATED.sub(" ", window)):
+    # Comp #15 held-out case h4: a fee stated far below an early "Unsubscribe"
+    # link was missed because only the FIRST cue's window was read. Every cue
+    # gets its own window; fee and multi-step language in any of them counts.
+    windows = [body_text[max(0, m.start() - 150): m.end() + 150]
+               for m in _OPTOUT_PRESENT.finditer(body_text)]
+    if any(_FEE_LANGUAGE.search(_FEE_NEGATED.sub(" ", w)) for w in windows):
         return Finding(
             "rule-5-opt-out", "Working, one-step, no-fee opt-out mechanism",
             "16 CFR §316.5", quote, "AUTOMATED", "FAIL",
@@ -543,7 +547,7 @@ def check_opt_out(body_text: str) -> Finding:
             "appears in the same vicinity — §316.5 bars requiring any fee "
             "to opt out.",
         )
-    if _MULTISTEP_LANGUAGE.search(window):
+    if any(_MULTISTEP_LANGUAGE.search(w) for w in windows):
         return Finding(
             "rule-5-opt-out", "Working, one-step, no-fee opt-out mechanism",
             "16 CFR §316.5", quote, "AUTOMATED", "FAIL",

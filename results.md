@@ -57,7 +57,7 @@ Two real defects, both in the original as well:
 
 **Read the 6 of 6 for what it is.** We wrote the fix after seeing these six cases, so passing them afterwards is not independent evidence. The pre-fix run is committed (`1bd595c`) so that the before can be checked. Set 3 is the test that does count.
 
-**Set 3: [`questions-heldout.md`](questions-heldout.md), six held-out cases**, from a third session under the same conditions and the same pre-fix README. It never saw the fix or the other two sets. **We have not fixed anything against this set, and we won't before judging.** Run with `./run-heldout.sh <arm>`.
+**Set 3: [`questions-heldout.md`](questions-heldout.md), six held-out cases**, from a third session under the same conditions and the same pre-fix README. It never saw the fix or the other two sets. **We did not fix anything against this set before judging.** After judging (2026-11-04) we fixed h4; see below. Run with `./run-heldout.sh <arm>`.
 
 | Case | What it tries | A | B |
 |---|---|---|---|
@@ -70,7 +70,9 @@ Two real defects, both in the original as well:
 
 **A 5 of 6, B 5 of 6, and the tie hides a difference.** A's h3 FAIL is *no opt-out language found*: it never recognised "take you off the list", so it never looked at what the opt-out asked for. B's h3 FAIL names the order number under §316.5. That is the round-2 cue fix reaching a wording it had not seen. It's one case, and we read it as no more than that.
 
-**h4 is a real miss in both arms, and it's the limit the README already names.** The fee and multi-step bars look 150 characters either side of the *first* opt-out cue. A preheader "Unsubscribe" link pulls that window to the top of the email, and the fee sentence ("Opting out of these emails carries a $2.00 processing fee...") sits outside it. "Opting out" isn't a cue either. An opt-out fee is the bar §316.5 names first, so this is the most serious open defect we know of. The fix is to check every opt-out cue's window, not just the first, but we are leaving it unfixed so that this set stays a clean test.
+**h4 is a real miss in both arms, and it's the limit the README already names.** The fee and multi-step bars look 150 characters either side of the *first* opt-out cue. A preheader "Unsubscribe" link pulls that window to the top of the email, and the fee sentence ("Opting out of these emails carries a $2.00 processing fee...") sits outside it. "Opting out" isn't a cue either. An opt-out fee is the bar §316.5 names first, so this is the most serious open defect we know of. The fix is to check every opt-out cue's window, not just the first, and we left it unfixed through judging so that this set stayed a clean test.
+
+**h4 fixed 2026-11-04, after judging.** `check_opt_out` now reads the window around every opt-out cue, not just the first, and "opting out" is a cue. Re-run: `./run-heldout.sh rebuild` gives h4 `PASS` (exit 1, §316.5 cited), so B is now 6 of 6 on this set. The other five held-out verdicts and every verdict in the other three sets are unchanged. The pre-fix run is commit `8c8f288`; the table above is that run. Because this set was fixed against, it is no longer a clean test: h4 now shows only that the one case we saw is closed, not that fee language elsewhere is caught. A fee phrased with neither a cue nor a cue-adjacent sentence is still missed.
 
 
 ## Ties
@@ -98,7 +100,7 @@ Two real defects, both in the original as well:
 - **The refusals.** Garbage input still exits 2. A clean run still can't mean "compliant". The output schema still has nowhere for a fix to go. `--judge-mode` is unchanged.
 - **The two out-of-scope rules** (honoring an opt-out within 10 business days, and monitoring third-party senders). They are still named on every run and not checked. They now cite the exact provision or guide heading they quote.
 - **Rule 3 still cites the FTC guide**, now its "Identify the message as an ad" heading, even though 15 U.S.C. 7704(a)(5)(A)(i) is in `reference/` now. The feedback didn't raise it, and we kept the change set to what it did raise.
-- **The fee and multi-step bars.** They still scan 150 characters around the first opt-out cue. Only the new third bar uses sentence scope. Held-out case h4 shows what this costs: a fee stated far from an early "Unsubscribe" link is missed in both arms (see set 3 above).
+- **The fee and multi-step bars.** They still scan 150 characters, now around every opt-out cue (changed 2026-11-04 for h4, see set 3 above). Only the new third bar uses sentence scope. A fee stated more than 150 characters from every cue is still missed.
 - **Primary-purpose classification (§316.3).** It is still not attempted, and the rule 3 and rule 5 messages still say so.
 
 ## About the 2026-09-18 fix in the old repo
